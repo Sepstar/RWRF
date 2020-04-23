@@ -1,7 +1,5 @@
-###20180122RWR和RWRN方法的收敛能力
-setwd("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/5_收敛能力")
-source("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/1_main/RWR_fusion_neighbor_new.R",encoding = "UTF-8")
-source("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/1_main/RWR_fusion_new.R",encoding = "UTF-8")
+source("home/RWR_fusion_neighbor_new.R",encoding = "UTF-8")
+source("home/RWR_fusion_new.R",encoding = "UTF-8")
 library(kernlab)
 library(SNFtool)
 library(pheatmap)
@@ -9,7 +7,7 @@ library(survival)
 
 if (0)
 {
-  ####构建原始虚拟数据####
+  ####Build raw virtual data####
   v1=c(runif(100,min = 1,max = 5),runif(100,min = 5,max = 9))
   v2=c(runif(100,min = 1,max = 5),runif(100,min = 5,max = 9))
   data_original=cbind(v1,v2)
@@ -31,7 +29,7 @@ if (0)
   NMI_matrix=matrix(data = 0,nrow = 30,ncol = 2)
   colnames(NMI_matrix)=c("RWR","RWRN")
   rownames(NMI_matrix)=1:30
-  ####测试RWR的收敛性####
+  ####Test RWR convergence####
   for (i in 1:5)
   {
     print(i)
@@ -45,20 +43,14 @@ if (0)
     NMI_matrix[i,2]=calNMI(RWRN_result,truelabel)
   }
 }
-####以ACC为例####
-setwd("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/5_收敛能力")
-load("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/3_重新海选20181111/results/2ACC/result_2ACC.RData")
+####ACC####
+load("home/result_2ACC.RData")
 rm(RWR_fusion)
 rm(RWR_fusion_neighbor)
 library(foreach)
 library(doParallel)
 cl<-makeCluster(8)  
 registerDoParallel(cl) 
-source("E:/研究生科研工作/2017异质网络随机游走做融合/3_20180620何松文件备份/随机游走融合/RWR_fusion/RWR_fusion_neighbor_for_converg.R")
-source("E:/研究生科研工作/2017异质网络随机游走做融合/3_20180620何松文件备份/随机游走融合/RWR_fusion/RWR_fusion_for_converg.R")
-
-# source("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/1_main/RWR_fusion_neighbor_for_converg_new.R",encoding = "UTF-8")
-# source("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/1_main/RWR_fusion_for_converg_new.R",encoding = "UTF-8")
 
 library(clValid)
 p_matrix=matrix(data = 0,nrow = 20,ncol = 2)
@@ -70,7 +62,7 @@ RWR_similarity_fusion_list=NULL
 RWRN_similarity_fusion_list=NULL
 RWR_similarity_fusion_temp_list=NULL
 RWRN_similarity_fusion_temp_list=NULL
-####测试RWR的收敛性####
+####Test RWR convergence####
 for (i in 1:20)
 {
   print(i)
@@ -117,13 +109,8 @@ lines(log10_relative_error_matrix[,2]~rownames(log10_relative_error_matrix) , co
 legend("bottomleft",legend = c("RWRF", "RWRNF"),col = c(rgb(178/255,34/255,34/255,0.8), rgb(240/255,128/255,128/255,0.8)),
        pch = c(16,16),bty = "n",pt.cex = 1,cex = 1.2,text.col = "black",horiz = F ,inset = c(0.8, 0.1))
 
-####以4BLCA为例####
-setwd("E:/研究生科研工作/2017异质网络随机游走做融合/4_跑一遍程序/2_收敛能力")
+####4BLCA####
 load("E:/研究生科研工作/2017异质网络随机游走做融合/4_跑一遍程序/4_重新海选20180710/results/筛选结果/4BLCA/result_4BLCA.RData")
-rm(RWR_fusion)
-rm(RWR_fusion_neighbor)
-source("E:/研究生科研工作/2017异质网络随机游走做融合/3_20180620何松文件备份/随机游走融合/RWR_fusion/RWR_fusion_neighbor_for_converg.R")
-source("E:/研究生科研工作/2017异质网络随机游走做融合/3_20180620何松文件备份/随机游走融合/RWR_fusion/RWR_fusion_for_converg.R")
 
 library(clValid)
 p_matrix=matrix(data = 0,nrow = 20,ncol = 2)

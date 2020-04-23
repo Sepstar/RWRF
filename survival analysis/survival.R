@@ -1,10 +1,9 @@
-setwd("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/10_生存曲线和PCA")
 library(FactoMineR)
 library(rgl)
 library(survival)
 
 ####2ACC####
-load("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/3_重新海选20181111/results/2ACC/result_2ACC.RData")
+load("home/result_2ACC.RData")
 
 survival_data[,3]=cluster_list[[2]][[4]]
 y=Surv(time = as.numeric(survival_data[,1]), event = as.numeric(survival_data[,2]))
@@ -49,11 +48,11 @@ rgl.postscript("plot1.pdf", "pdf", drawText = TRUE)
 rm(list = ls())
 
 
-# 画relapse-free survival和survival after relapse
-load("E:/研究生科研工作/2017异质网络随机游走做融合/6_计算流程/3_重新海选20181111/results/2ACC/result_2ACC.RData")
+# relapse-free survival and survival after relapse
+load("home/result_2ACC.RData")
 # RWR
 survival_data[,3]=cluster_list[[2]][[4]]
-ACC_clinical=t(read.table(file="E:/研究生科研工作/2018肿瘤分型(厦大合作)/0_cancer original dataFrom于吉军/2、ACC-TCGA肾上腺皮质癌/ACC_clinicalMatrix",header = T,sep = "\t",row.names = 1,check.names = F))
+ACC_clinical=t(read.table(file="home/ACC_clinicalMatrix",header = T,sep = "\t",row.names = 1,check.names = F))
 new_survival_data=NULL
 for (i in 1:nrow(survival_data))
 {
@@ -68,7 +67,7 @@ for (i in 1:nrow(survival_data))
 new_survival_data=as.data.frame(new_survival_data)
 colnames(new_survival_data)[3:5]=c("Subtype","_RFS","_RFS_IND")
 
-# 挑出_RFS_IND不等于1的行,relapse-free survival
+# relapse-free survival
 new_survival_data2 = data.frame(sapply(new_survival_data,trimws,which="both"), stringsAsFactors=FALSE)
 new_survival_data3 = new_survival_data2[-which(new_survival_data2[,5] == "1"),]
 

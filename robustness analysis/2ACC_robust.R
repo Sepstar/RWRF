@@ -1,10 +1,5 @@
-####20180111byhes，本脚本目的是根据前期初筛结果，对重点关注的几种肿瘤的融合聚类效果复现。
-
-#source("E:/博士/随机游走融合/RWR_fusion/RWR_fusion_neighbor.R")
-#source("E:/博士/随机游走融合/RWR_fusion/RWR_fusion.R")
-source("/home/wenyuqi/RWR/RWR_fusion_neighbor_new.R")
-source("/home/wenyuqi/RWR/RWR_fusion_new.R")
-.libPaths("/home/wenyuqi/Rpackage/")# 不需要是Rpackage-R-3.3.3
+source("/home/RWR/RWR_fusion_neighbor_new.R")
+source("/home/RWR/RWR_fusion_new.R")
 library(SNFtool)
 library(survival)
 library(clValid)
@@ -14,11 +9,10 @@ library(doParallel)
 cl<-makeCluster(8)  
 registerDoParallel(cl) 
 clusterEvalQ(cl, .libPaths("/home/wenyuqi/Rpackage/"))
-# setwd("/home/huangxin/yujijun/originaldata2")
-setwd("/home/wenyuqi/RWR/robust/")
+setwd("/home/RWR/robust/")
 set.seed(7)
 
-####2ACC设置参数####
+####2ACC-Setting parameters####
 subpath="2ACC"
 CLUSTER_NUM=3
 gama_list=seq(from=0.1,to=0.9,by=0.1)
@@ -41,7 +35,7 @@ survival_data[,1]=survival_data[,1]/30
 survival_data=cbind(survival_data,survival_data[,2])
 colnames(survival_data)[3]="Cluster"
 
-##利用SNFtool包构建相似性矩阵
+##Using SNFtool package to construct similarity matrix
 distL = lapply(dataL, function(x) dist2(x, x))
 affinityL = lapply(distL, function(x) affinityMatrix(x, 20, 0.5))
 
@@ -55,7 +49,6 @@ RWR_similarity_fusion_temp_list=NULL
 RWRN_similarity_fusion_temp_list=NULL
 for (gama_index in 1:length(gama_list))
 {
-  ##融合
   time1=Sys.time()
   RWR_similarity_fusion=RWR_fusion(sim_list = affinityL,gama=gama_list[gama_index])
   time2=Sys.time()
@@ -73,17 +66,15 @@ for (gama_index in 1:length(gama_list))
   RWRN_similarity_fusion_list=c(RWRN_similarity_fusion_list,list(RWRN_similarity_fusion))
   RWR_similarity_fusion_temp_list=c(RWR_similarity_fusion_temp_list,list(RWR_similarity_fusion_temp))
   RWRN_similarity_fusion_temp_list=c(RWRN_similarity_fusion_temp_list,list(RWRN_similarity_fusion_temp))
-  
 }
 
 for (gama_index in 1:length(gama_list))
 {
-  ##聚类
   RWR_result=specc(RWR_similarity_fusion_list[[gama_index]],centers=CLUSTER_NUM)
   RWRN_result=specc(RWRN_similarity_fusion_list[[gama_index]],centers=CLUSTER_NUM)
   
   
-  ##生存分析
+  ##survival analysis
   survival_data[,3]=RWR_result
   y=Surv(time = as.numeric(survival_data[,1]), event = as.numeric(survival_data[,2]))
   sdf=survdiff(y ~ as.character(survival_data[,3]))
@@ -108,7 +99,7 @@ RWRN_similarity_fusion_list=NULL
 RWRN_similarity_fusion_temp_list=NULL
 for (neighbor_num_index in 1:length(neighbor_num_list))
 {
-  ##融合
+  ##Fusion
   time1=Sys.time()
   RWRN_similarity_fusion=RWR_fusion_neighbor(sim_list = affinityL,neighbor_num=neighbor_num_list[neighbor_num_index])
   time2=Sys.time()
@@ -120,11 +111,11 @@ for (neighbor_num_index in 1:length(neighbor_num_list))
 }
 for (neighbor_num_index in 1:length(neighbor_num_list))
 {
-  ##聚类
+  ##Cluster
   RWRN_result=specc(RWRN_similarity_fusion_list[[neighbor_num_index]],centers=CLUSTER_NUM)
 
 
-  ##生存分析
+  ##survival analysis
   survival_data[,3]=RWRN_result
   y=Surv(time = as.numeric(survival_data[,1]), event = as.numeric(survival_data[,2]))
   sdf=survdiff(y ~ as.character(survival_data[,3]))
@@ -143,7 +134,7 @@ RWRN_similarity_fusion_list=NULL
 RWRN_similarity_fusion_temp_list=NULL
 for (alpha_num_index in 1:length(alpha_list))
 {
-  ##融合
+  ##fusion
   time1=Sys.time()
   RWRN_similarity_fusion=RWR_fusion_neighbor(sim_list = affinityL,alpha=alpha_list[alpha_num_index])
   time2=Sys.time()
@@ -155,11 +146,11 @@ for (alpha_num_index in 1:length(alpha_list))
 }
 for (alpha_num_index in 1:length(alpha_list))
 {
-  ##聚类
+  ##Cluster
   RWRN_result=specc(RWRN_similarity_fusion_list[[alpha_num_index]],centers=CLUSTER_NUM)
 
 
-  ##生存分析
+  ##survival analysis
   survival_data[,3]=RWRN_result
   y=Surv(time = as.numeric(survival_data[,1]), event = as.numeric(survival_data[,2]))
   sdf=survdiff(y ~ as.character(survival_data[,3]))
@@ -178,7 +169,7 @@ RWRN_similarity_fusion_list=NULL
 RWRN_similarity_fusion_temp_list=NULL
 for (beta_num_index in 1:length(beta_list))
 {
-  ##融合
+  ##Fusion
   time1=Sys.time()
   RWRN_similarity_fusion=RWR_fusion_neighbor(sim_list = affinityL,beta=beta_list[beta_num_index])
   time2=Sys.time()
@@ -190,11 +181,11 @@ for (beta_num_index in 1:length(beta_list))
 }
 for (beta_num_index in 1:length(beta_list))
 {
-  ##聚类
+  ##Cluster
   RWRN_result=specc(RWRN_similarity_fusion_list[[beta_num_index]],centers=CLUSTER_NUM)
 
 
-  ##生存分析
+  ##survival analysis
   survival_data[,3]=RWRN_result
   y=Surv(time = as.numeric(survival_data[,1]), event = as.numeric(survival_data[,2]))
   sdf=survdiff(y ~ as.character(survival_data[,3]))

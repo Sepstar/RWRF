@@ -6,7 +6,8 @@ However, the algorithm devel-opment for multi-omics data integration remains a p
 
 # Get Started
 ## Example Datasets
-To get started, you need to download example datasets (3 types of adrenocortical carcinoma data: mRNA expression, DNA methylation, and microRNA (miRNA) expression) from TCGA:
+To get started, you need to download example datasets (3 types of adrenocortical carcinoma data: mRNA expression, DNA methylation, and microRNA (miRNA) expression) from TCGA:  
+
 [TCGA](https://portal.gdc.cancer.gov)
 
 

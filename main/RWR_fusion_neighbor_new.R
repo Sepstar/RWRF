@@ -167,23 +167,8 @@ RWR_fusion_neighbor <- function(sim_list,iteration_max=1000,gama=0.7,neighbor_nu
   RWR_similarity=RWR_similarity/(len_net)
   RWR_similarity=(RWR_similarity+t(RWR_similarity))/2
   
-  if (0)
-  {
-    for (i in 1:len_node)
-    {
-      for (j in 1:len_node)
-      {
-        RWR_similarity[i,j]=RWR_similarity[i,j]/(sum(RWR_similarity[i,])-RWR_similarity[i,i])
-      }
-    }
-    diag(RWR_similarity)=1
-  }
-  
-  if (1)
-  {
-    RWR_similarity=RWR_similarity/max(RWR_similarity)
-    #diag(RWR_similarity)=1
-  }
+  RWR_similarity=RWR_similarity/max(RWR_similarity)
+  #diag(RWR_similarity)=1
   
   return(RWR_similarity)
 }

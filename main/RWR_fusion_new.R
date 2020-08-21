@@ -133,11 +133,8 @@ RWR_fusion <- function(sim_list,iteration_max=1000,gama=0.7)
   RWR_similarity=RWR_similarity/(len_net)
   RWR_similarity=(RWR_similarity+t(RWR_similarity))/2
   
-  if (1)
-  {
-    RWR_similarity=RWR_similarity/max(RWR_similarity)
-    #diag(RWR_similarity)=1
-  }
+  RWR_similarity=RWR_similarity/max(RWR_similarity)
+  #diag(RWR_similarity)=1
   
   return(RWR_similarity)
 }

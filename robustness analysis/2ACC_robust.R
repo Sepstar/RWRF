@@ -8,7 +8,7 @@ library(foreach)
 library(doParallel)
 cl<-makeCluster(8)  
 registerDoParallel(cl) 
-clusterEvalQ(cl, .libPaths("/home/wenyuqi/Rpackage/"))
+clusterEvalQ(cl, .libPaths("/home/Rpackage/"))
 setwd("/home/RWR/robust/")
 set.seed(7)
 
@@ -20,9 +20,9 @@ neighbor_num_list=seq(from=5,to=30,by=5)
 alpha_list=seq(from=0.1,to=0.9,by=0.1)
 beta_list=seq(from=0.1,to=0.9,by=0.1)
 ####2ACC####
-mrna_data=as.matrix(read.table(file = paste("/home/100/Cancer_originaldata2/",subpath,"/HiSeqV2_PANCAN2.txt",sep = ""),header = T,sep = "\t",quote = "",check.names = F))
-mirna_data=as.matrix(read.table(file = paste("/home/100/Cancer_originaldata2/",subpath,"/miRNA_HiSeq_gene1.txt",sep = ""),header = T,sep = "\t",quote = "",check.names = F))
-meth_data=as.matrix(read.table(file = paste("/home/100/Cancer_originaldata2/",subpath,"/HumanMethylation4501.txt",sep = ""),header = T,sep = "\t",quote = "",check.names = F))
+mrna_data=as.matrix(read.table(file = paste("/home/Cancer_originaldata2/",subpath,"/HiSeqV2_PANCAN2.txt",sep = ""),header = T,sep = "\t",quote = "",check.names = F))
+mirna_data=as.matrix(read.table(file = paste("/home/Cancer_originaldata2/",subpath,"/miRNA_HiSeq_gene1.txt",sep = ""),header = T,sep = "\t",quote = "",check.names = F))
+meth_data=as.matrix(read.table(file = paste("/home/Cancer_originaldata2/",subpath,"/HumanMethylation4501.txt",sep = ""),header = T,sep = "\t",quote = "",check.names = F))
 mrna_data=t(mrna_data)
 mirna_data=t(mirna_data)
 meth_data=t(meth_data)
@@ -30,12 +30,12 @@ dataL=list(mrna_data)
 dataL=c(dataL,list(mirna_data))
 dataL=c(dataL,list(meth_data))
 
-survival_data=read.table(file = paste("/home/100/Cancer_originaldata2/",subpath,"/clinicalMatrix15.txt",sep = ""),header = TRUE, sep="\t")
+survival_data=read.table(file = paste("/home/Cancer_originaldata2/",subpath,"/clinicalMatrix15.txt",sep = ""),header = TRUE, sep="\t")
 survival_data[,1]=survival_data[,1]/30
 survival_data=cbind(survival_data,survival_data[,2])
 colnames(survival_data)[3]="Cluster"
 
-##Using SNFtool package to construct similarity matrix
+##Construct similarity matrix
 distL = lapply(dataL, function(x) dist2(x, x))
 affinityL = lapply(distL, function(x) affinityMatrix(x, 20, 0.5))
 
@@ -73,7 +73,6 @@ for (gama_index in 1:length(gama_list))
   RWR_result=specc(RWR_similarity_fusion_list[[gama_index]],centers=CLUSTER_NUM)
   RWRN_result=specc(RWRN_similarity_fusion_list[[gama_index]],centers=CLUSTER_NUM)
   
-  
   ##survival analysis
   survival_data[,3]=RWR_result
   y=Surv(time = as.numeric(survival_data[,1]), event = as.numeric(survival_data[,2]))
@@ -86,7 +85,6 @@ for (gama_index in 1:length(gama_list))
   sdf=survdiff(y ~ as.character(survival_data[,3]))
   gama_result_matrix[gama_index,3]=1-pchisq(sdf$chisq, length(sdf$n) - 1)
   gama_result_matrix[gama_index,4]=dunn(-log(RWRN_similarity_fusion_temp_list[[gama_index]]),RWRN_result)
-  
 }
 
 write.table(gama_result_matrix,file = paste("gama_result_matrix",subpath,".txt",sep = ""),sep = "\t",quote = F,row.names = T,col.names = T)
@@ -114,14 +112,12 @@ for (neighbor_num_index in 1:length(neighbor_num_list))
   ##Cluster
   RWRN_result=specc(RWRN_similarity_fusion_list[[neighbor_num_index]],centers=CLUSTER_NUM)
 
-
   ##survival analysis
   survival_data[,3]=RWRN_result
   y=Surv(time = as.numeric(survival_data[,1]), event = as.numeric(survival_data[,2]))
   sdf=survdiff(y ~ as.character(survival_data[,3]))
   neighbor_result_matrix[neighbor_num_index,1]=1-pchisq(sdf$chisq, length(sdf$n) - 1)
   neighbor_result_matrix[neighbor_num_index,2]=dunn(-log(RWRN_similarity_fusion_temp_list[[neighbor_num_index]]),RWRN_result)
-
 }
 
 write.table(neighbor_result_matrix,file = paste("neighbor_result_matrix",subpath,".txt",sep = ""),sep = "\t",quote = F,row.names = T,col.names = T)
@@ -149,14 +145,12 @@ for (alpha_num_index in 1:length(alpha_list))
   ##Cluster
   RWRN_result=specc(RWRN_similarity_fusion_list[[alpha_num_index]],centers=CLUSTER_NUM)
 
-
   ##survival analysis
   survival_data[,3]=RWRN_result
   y=Surv(time = as.numeric(survival_data[,1]), event = as.numeric(survival_data[,2]))
   sdf=survdiff(y ~ as.character(survival_data[,3]))
   alpha_result_matrix[alpha_num_index,1]=1-pchisq(sdf$chisq, length(sdf$n) - 1)
   alpha_result_matrix[alpha_num_index,2]=dunn(-log(RWRN_similarity_fusion_temp_list[[alpha_num_index]]),RWRN_result)
-
 }
 
 write.table(alpha_result_matrix,file = paste("alpha_result_matrix",subpath,".txt",sep = ""),sep = "\t",quote = F,row.names = T,col.names = T)
@@ -184,14 +178,12 @@ for (beta_num_index in 1:length(beta_list))
   ##Cluster
   RWRN_result=specc(RWRN_similarity_fusion_list[[beta_num_index]],centers=CLUSTER_NUM)
 
-
   ##survival analysis
   survival_data[,3]=RWRN_result
   y=Surv(time = as.numeric(survival_data[,1]), event = as.numeric(survival_data[,2]))
   sdf=survdiff(y ~ as.character(survival_data[,3]))
   beta_result_matrix[beta_num_index,1]=1-pchisq(sdf$chisq, length(sdf$n) - 1)
   beta_result_matrix[beta_num_index,2]=dunn(-log(RWRN_similarity_fusion_temp_list[[beta_num_index]]),RWRN_result)
-
 }
 
 write.table(beta_result_matrix,file = paste("beta_result_matrix",subpath,".txt",sep = ""),sep = "\t",quote = F,row.names = T,col.names = T)

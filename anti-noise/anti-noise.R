@@ -38,21 +38,7 @@ for (sd_index in 1:length(sd_list))
   
   dataL=c(list(data_gaussian),list(data_gamma))
   
-  ##Similarity matrix based on simple Euclidean distance
-  affinity_Eu=NULL
-  dist_Eu=NULL
-  for(i in 1:length(dataL))
-  {
-    dist_temp=as.matrix(dist(dataL[[i]]))
-    dist_temp=(dist_temp-min(dist_temp))/(max(dist_temp)-min(dist_temp))
-    affinity_temp=1-dist_temp
-    dist_Eu=c(dist_Eu,list(dist_temp))
-    affinity_Eu=c(affinity_Eu,list(affinity_temp))
-    rm(dist_temp)
-    rm(affinity_temp)
-  }
-  
-  ##Using SNFtool package to construct similarity matrix
+  ##construct similarity matrix
   distL = lapply(dataL, function(x) dist2(x, x))
   affinityL = lapply(distL, function(x) affinityMatrix(x, 20, 0.5))
   
@@ -80,13 +66,11 @@ for (sd_index in 1:length(sd_list))
   SNF_result=spectralClustering(SNF_similarity_fusion,2)
   Concatenation_result=spectralClustering(affinityL_Concatenation_Eu,2)
   
-  
   sd_NMI_matrix[sd_index,1]=calNMI(RWR_result@.Data,truelabel)
   sd_NMI_matrix[sd_index,2]=calNMI(RWRN_result@.Data,truelabel)
   sd_NMI_matrix[sd_index,3]=calNMI(SNF_result,truelabel)
   sd_NMI_matrix[sd_index,4]=calNMI(Concatenation_result,truelabel)
 }
-
 
 beta_list=seq(from=0.2,to=3,by=0.2)
 beta_NMI_matrix=matrix(data = 0,nrow = length(beta_list),ncol = 4)
@@ -105,22 +89,7 @@ for (beta_index in 1:length(beta_list))
   data_gamma=data_original+gamma_noise
   plot(data_gamma,col=truelabel,main = 'data type gamma')
   
-  ##Similarity matrix based on simple Euclidean distance
-  dataL=c(list(data_gaussian),list(data_gamma))
-  affinity_Eu=NULL
-  dist_Eu=NULL
-  for(i in 1:length(dataL))
-  {
-    dist_temp=as.matrix(dist(dataL[[i]]))
-    dist_temp=(dist_temp-min(dist_temp))/(max(dist_temp)-min(dist_temp))
-    affinity_temp=1-dist_temp
-    dist_Eu=c(dist_Eu,list(dist_temp))
-    affinity_Eu=c(affinity_Eu,list(affinity_temp))
-    rm(dist_temp)
-    rm(affinity_temp)
-  }
-  
-  ##Using SNFtool package to construct similarity matrix
+  ##Construct similarity matrix
   distL = lapply(dataL, function(x) dist2(x, x))
   affinityL = lapply(distL, function(x) affinityMatrix(x, 20, 0.5))
   
@@ -147,7 +116,6 @@ for (beta_index in 1:length(beta_list))
   RWRN_result=specc(RWRN_similarity_fusion,centers=2)
   SNF_result=spectralClustering(SNF_similarity_fusion,2)
   Concatenation_result=spectralClustering(affinityL_Concatenation_Eu,2)
-  
   
   beta_NMI_matrix[beta_index,1]=calNMI(RWR_result,truelabel)
   beta_NMI_matrix[beta_index,2]=calNMI(RWRN_result,truelabel)
@@ -167,7 +135,6 @@ legend("bottomleft",legend = c("RWRF", "RWRNF"),col = colors_border_method,
 # legend("bottomleft",legend = c("RWRF", "RWRNF","SNF","Concatenation"),col = colors_border_method,
 #        pch = c(16,17,18,19),bty = "n",pt.cex = 1,cex = 1.2,text.col = "black",horiz = F ,inset = c(0.7, 0.1))
 
-
 plot(beta_NMI_matrix[,1]~rownames(beta_NMI_matrix) , type="b" , bty="l" , xlab=expression(beta), ylab="NMI" , col=colors_border_method[1] , lwd=3 , pch=16 , ylim=c(0,1) )
 lines(beta_NMI_matrix[,2]~rownames(beta_NMI_matrix) , col=colors_border_method[2] , lwd=3 , pch=17 , type="b" )
 # lines(beta_NMI_matrix[,3]~rownames(beta_NMI_matrix) , col=colors_border_method[3] , lwd=3 , pch=18 , type="b" )
@@ -177,7 +144,7 @@ legend("bottomleft",legend = c("RWRF", "RWRNF"),col = colors_border_method,
 # legend("bottomleft",legend = c("RWRF", "RWRNF","SNF","Concatenation"),col = colors_border_method,
 #        pch = c(16,17,18,19),bty = "n",pt.cex = 1,cex = 1.2,text.col = "black",horiz = F ,inset = c(0.7, 0.1))
 
-
+# plot
 data_original=cbind(v1,v2)
 rownames(data_original)=c(paste("sample",seq(from=1,to=200),sep = ""))
 truelabel = c(matrix(1,100,1),matrix(2,100,1))
@@ -186,7 +153,6 @@ plot(data_original,col=truelabel,main = 'data type')
 data_gaussian=data_original+rnorm(400, mean = 0, sd = 1)
 plot(data_gaussian,col=truelabel,main = 'data type gaussian')
 
-####Add Gama noise####
 gamma_noise=rgamma(400,shape = 1,scale = 1/2)
 gamma_noise[which(gamma_noise<0)]=0
 data_gamma=data_original+gamma_noise

@@ -38,7 +38,7 @@ for (sd_index in 1:length(sd_list))
   
   dataL=c(list(data_gaussian),list(data_gamma))
   
-  ##construct similarity matrix
+  ##Construct similarity matrix
   distL = lapply(dataL, function(x) dist2(x, x))
   affinityL = lapply(distL, function(x) affinityMatrix(x, 20, 0.5))
   
